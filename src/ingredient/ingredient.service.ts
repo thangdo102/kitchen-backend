@@ -1,38 +1,48 @@
 /* eslint-disable prettier/prettier */
 
-import { Injectable } from '@nestjs/common';
-
-const ingredients = [
-  {
-    id: 1,
-    recipeId: 1,
-    recipe: 'Pineapple Smoothie',
-    ingredients: ['Pineapple', 'Ice'],
-    instruction: 'Blend pineapple with ice!',
-    slug: 'pineapple-smoothie',
-    image:
-      'https://wholefoodsoulfoodkitchen.com/wp-content/uploads/2022/07/frozen-pineapple-smoothie-without-banana-4.jpg',
-  },
-  {
-    id: 2,
-    recipeId: 2,
-    recipe: 'Mango Smoothie',
-    ingredients: ['Mango', 'Ice'],
-    instruction: 'Blend mango with ice!',
-    slug: 'mango-smoothie',
-    image:
-      'https://cdn.nurfit.de/media/22/91/b3/1622196133/Mango%20Smoothie.jpg',
-  },
-];
+import { Injectable } from '@nestjs/common'
+import { InjectRepository } from '@nestjs/typeorm'
+import { Ingredient } from './ingredient.entity'
+import { DeleteResult, Repository, UpdateResult } from 'typeorm'
 
 @Injectable()
 export class IngredientService {
-  getIngredientBySlug(slug: string) {
-    const ingredient = ingredients.find((ing) => ing.slug === slug);
-    return ingredient;
+  constructor(
+    @InjectRepository(Ingredient)
+    private readonly ingredientRepo: Repository<Ingredient>,
+  ) {}
+
+  async findAll(): Promise<Ingredient[]> {
+    return await this.ingredientRepo.find()
   }
 
-  getAllIngredients() {
-    return ingredients;
+  async findOne(id: any): Promise<Ingredient> {
+    return await this.ingredientRepo.findOne({
+      where: {
+        id: id,
+      },
+    })
+  }
+
+  async getIngredientBySlug(slug: any): Promise<Ingredient> {
+    const data = await this.ingredientRepo.findOne({
+      where: {
+        slug: slug,
+      },
+    })
+
+    return data
+  }
+
+  async create(ingredient: Ingredient): Promise<Ingredient> {
+    return await this.ingredientRepo.save(ingredient)
+  }
+
+  async update(ingredient: Ingredient): Promise<UpdateResult> {
+    return await this.ingredientRepo.update(ingredient.id, ingredient)
+  }
+
+  async delete(id: any): Promise<DeleteResult> {
+    return await this.ingredientRepo.delete(id)
   }
 }

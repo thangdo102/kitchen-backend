@@ -1,28 +1,37 @@
 /* eslint-disable prettier/prettier */
-import { Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common'
+import { InjectRepository } from '@nestjs/typeorm'
+import { Recipe } from './recipe.entity'
+import { DeleteResult, Repository, UpdateResult } from 'typeorm'
 
 @Injectable()
 export class RecipeService {
-  getAllRecipe() {
-    return [
-      {
-        id: 1,
-        recipce: 'Pineapple Smoothie',
-        slug: 'pineapple-smoothie',
-        ingredientId: 1,
-        chef: 'Thang',
-        image:
-          'https://wholefoodsoulfoodkitchen.com/wp-content/uploads/2022/07/frozen-pineapple-smoothie-without-banana-4.jpg',
+  constructor(
+    @InjectRepository(Recipe)
+    private readonly recipeRepo: Repository<Recipe>,
+  ) {}
+
+  async findAll(): Promise<Recipe[]> {
+    return await this.recipeRepo.find()
+  }
+
+  async findBySlug(slug: string): Promise<Recipe> {
+    return await this.recipeRepo.findOne({
+      where: {
+        slug: slug,
       },
-      {
-        id: 2,
-        recipce: 'Mango Smoothie',
-        slug: 'mango-smoothie',
-        ingredientId: 2,
-        chef: 'Thang',
-        image:
-          'https://cdn.nurfit.de/media/22/91/b3/1622196133/Mango%20Smoothie.jpg',
-      },
-    ];
+    })
+  }
+
+  async create(recipe: Recipe): Promise<Recipe> {
+    return await this.recipeRepo.save(recipe)
+  }
+
+  async update(recipe: Recipe): Promise<UpdateResult> {
+    return await this.recipeRepo.update(recipe.id, recipe)
+  }
+
+  async delete(id: any): Promise<DeleteResult> {
+    return await this.recipeRepo.delete(id)
   }
 }

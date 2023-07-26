@@ -5,6 +5,8 @@ import { AppService } from './app.service'
 import { RecipeModule } from './recipes/recipe.module'
 import { IngredientModule } from './ingredient/ingredient.module'
 import { TypeOrmModule } from '@nestjs/typeorm'
+import { UsersModule } from './users/users.module'
+import { UserEntity } from './users/users.entity'
 
 @Module({
   imports: [
@@ -15,11 +17,12 @@ import { TypeOrmModule } from '@nestjs/typeorm'
       username: 'root',
       password: '123456',
       database: 'kitchen',
-      entities: [__dirname + '/**/*.entity{.ts,.js}'],
+      entities: [UserEntity],
       synchronize: true,
     }),
-    RecipeModule,
-    IngredientModule,
+    // RecipeModule,
+    // IngredientModule,
+    UsersModule,
   ],
   controllers: [AppController],
   providers: [AppService],
